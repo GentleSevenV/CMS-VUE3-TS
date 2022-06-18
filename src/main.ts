@@ -2,6 +2,9 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
+
+import 'normalize.css'
+import '@/assets/css/index.less'
 import lrRequest from '@/service/index'
 
 // 测试查看axios demo案例时打开
@@ -15,7 +18,16 @@ import lrRequest from '@/service/index'
 // import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/el-loading.css'
 
-createApp(App).use(store).use(router).mount('#app')
+// 导入所有Element Plus图标库
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
+const app = createApp(App)
+app.use(store).use(router).mount('#app')
+
+// 遍历所有Element Plus图标组件添加进app全局组件中
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
 
 // 使用环境变量
 // console.log(BASE_URL, TIME_OUT)
