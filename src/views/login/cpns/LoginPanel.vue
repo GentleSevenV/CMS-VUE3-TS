@@ -9,7 +9,7 @@
             <span>账号登录</span>
           </span>
         </template>
-        <login-account></login-account>
+        <login-account ref="loginAccountRef"></login-account>
       </el-tab-pane>
       <el-tab-pane>
         <template #label>
@@ -20,21 +20,46 @@
         </template>
         <login-phone></login-phone>
       </el-tab-pane>
-      <!-- <el-tab-pane label="Config">Config</el-tab-pane>
-      <el-tab-pane label="Role">Role</el-tab-pane>
-      <el-tab-pane label="Task">Task</el-tab-pane> -->
     </el-tabs>
+
+    <div class="login-control">
+      <el-checkbox v-model="isKeepPassword" label="记住密码" size="default" />
+      <el-link type="primary">忘记密码</el-link>
+    </div>
+
+    <!-- 给登录按钮添加一个点击事件HandleLoginAction -->
+    <el-button type="primary" @click="HandleLoginAction" class="login-btn">立即登录</el-button>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import LoginAccount from './LoginAccount.vue'
 import LoginPhone from './LoginPhone.vue'
 
 export default defineComponent({
   name: 'LoginPanel',
-  components: { LoginAccount, LoginPhone }
+  components: { LoginAccount, LoginPhone },
+  setup() {
+    // 定义一个响应式变量isKeepPassword用于保存是否记住密码，默认true（勾选记住密码）
+    const isKeepPassword = ref(true)
+
+    // 定义一个Ref对象loginAccountRef用于拿到LoginAccount这个组件对象，并通过<InstanceType<typeof LoginAccount>>这一泛型指定这个Ref对象类型为LoginAccount
+    const loginAccountRef = ref<InstanceType<typeof LoginAccount>>()
+
+    // 当立即登录按钮被点击时触发HandleLoginAction这一点击事件，执行其内部函数
+    const HandleLoginAction = () => {
+      // console.log(loginAccountRef.value)
+      // 通过loginAccountRef拿到LoginAccount这个组件对象，并调用LoginAccount这个组件对象中的LoginAccountAction这个方法（想要获取ref对象内部的值或者方法必须调用.value,并且此处需要使用可选类型，以避免因为没有LoginAccount这个对象时而报错）
+      loginAccountRef.value?.LoginAccountAction()
+    }
+
+    return {
+      isKeepPassword,
+      loginAccountRef,
+      HandleLoginAction
+    }
+  }
 })
 </script>
 
@@ -57,5 +82,17 @@ export default defineComponent({
 .demo-tabs .custom-tabs-label span {
   vertical-align: middle;
   margin-left: 4px;
+}
+
+.login-control {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+.login-btn {
+  width: 100%;
+  height: 40px;
+  margin-top: 10px;
 }
 </style>
