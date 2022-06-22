@@ -1,9 +1,10 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import LocalCache from '@/utils/cache'
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: '/',
-    redirect: '/login'
+    redirect: '/home'
   },
   {
     path: '/login',
@@ -28,6 +29,17 @@ const routes: Array<RouteRecordRaw> = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+// 利用导航守卫，判断如果当前进入的不是登录页面，那么就要去本地缓存中查找token有没有值
+// 如果本地缓存中token没有值说明没有登录，或者登录已过期，必须重新登录，强制跳转至登录页面
+router.beforeEach((to) => {
+  if (to.path !== '/login') {
+    const token = LocalCache.getCache('token')
+    if (!token) {
+      return '/login'
+    }
+  }
 })
 
 export default router
