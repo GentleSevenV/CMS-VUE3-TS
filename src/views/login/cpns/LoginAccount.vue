@@ -4,12 +4,12 @@
     <el-form :rules="rules" :model="account" ref="formRef">
       <!-- prop对应的是rules里面的验证方式验证的是账户 -->
       <el-form-item label="账号" prop="name">
-        <el-input v-model="account.name" clearable></el-input>
+        <el-input v-model="account.name" clearable />
       </el-form-item>
 
       <!-- prop对应的是rules里面的验证方式验证的是密码 -->
       <el-form-item label="密码" prop="password">
-        <el-input v-model="account.password" clearable></el-input>
+        <el-input v-model="account.password" show-password clearable />
       </el-form-item>
     </el-form>
   </div>
@@ -17,9 +17,12 @@
 
 <script lang="ts">
 import { defineComponent, reactive, ref } from 'vue'
+import { useStore } from 'vuex'
 
 // 此处导入ElForm不是为了使用el-form这个组件，而是为了在下面通过泛型拿到ElForm它的类型赋值给formRef这个ref对象
 import { ElForm } from 'element-plus'
+
+import localCache from '@/utils/cache'
 
 export default defineComponent({
   name: 'LoginAccount',
@@ -27,9 +30,11 @@ export default defineComponent({
   setup() {
     // 定义account对象用于保存用户输入的账户及密码信息
     const account = reactive({
-      name: '',
-      password: ''
+      name: localCache.getCache('name') ?? '',
+      password: localCache.getCache('password') ?? ''
     })
+
+    const store = useStore()
 
     //定义验证账户及密码的验证方式
     const rules = {
@@ -50,12 +55,22 @@ export default defineComponent({
     const formRef = ref<InstanceType<typeof ElForm>>()
 
     // 给当前LoginAccount组件定义一个LoginAccountAction方法，并return出去
-    const LoginAccountAction = () => {
+    const LoginAccountAction = (isKeepPassword: boolean) => {
       // 通过formRef这个对象获取上面el-form里面保存的账户和密码，并通过validate这个方法对账户和密码进行验证，validate这个方法里有一个回调函数，当验证通过时，回调函数中的isValid为true，当验证失败时isValid为false
       formRef.value?.validate((isValid) => {
-        console.log(isValid)
+        // console.log(isValid)
         if (isValid) {
-          console.log('正在执行真正的登录操作...')
+          // 如果el-form对账户和密码通过上面的验证方式验证通过之后，需进行如下操作：
+          // 1.将账户和密码保存进local storage中
+          if (isKeepPassword) {
+            localCache.setCache('name', account.name)
+            localCache.setCache('password', account.password)
+          } else {
+            localCache.deleteCache('name')
+            localCache.deleteCache('password')
+          }
+
+          store.dispatch('login/accountLoginAction', { ...account })
         } else {
           console.log('账号或密码有误，请检查之后重新登录...')
         }

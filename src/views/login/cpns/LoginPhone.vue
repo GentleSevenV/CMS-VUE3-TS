@@ -1,12 +1,12 @@
 <template>
   <div class="loginphone">
-    <el-form :rules="rules" :model="Phone">
+    <el-form ref="formRef" :rules="rules" :model="Phone">
       <el-form-item label="手机号" prop="number">
-        <el-input v-model="Phone.number"></el-input>
+        <el-input v-model="Phone.number" />
       </el-form-item>
       <el-form-item label="验证码" prop="code">
         <div class="get-code">
-          <el-input v-model="Phone.code"></el-input>
+          <el-input v-model="Phone.code" />
           <el-button type="primary" class="verify-btn">获取验证码</el-button>
         </div>
       </el-form-item>
@@ -15,16 +15,20 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive } from 'vue'
-
+import { defineComponent, reactive, ref } from 'vue'
+import { useStore } from 'vuex'
+import { ElForm } from 'element-plus'
 export default defineComponent({
   name: 'LoginPhone',
   components: {},
   setup() {
+    const store = useStore()
     const Phone = reactive({
       number: '',
       code: ''
     })
+
+    const formRef = ref<InstanceType<typeof ElForm>>()
 
     const rules = {
       number: [
@@ -36,9 +40,21 @@ export default defineComponent({
         { pattern: /^[0-9]{6,6}$/, message: '验证码必须是6位数字', trigger: 'blur' }
       ]
     }
+
+    const loginPhoneAction = () => {
+      formRef.value?.validate((isValid) => {
+        if (isValid) {
+          console.log('手机登录成功')
+          store.dispatch('login/phoneLoginAction', { ...Phone })
+        }
+      })
+    }
+
     return {
       Phone,
-      rules
+      rules,
+      formRef,
+      loginPhoneAction
     }
   }
 })

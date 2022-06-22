@@ -1,8 +1,8 @@
 <template>
   <div class="loginpanel">
     <h1>内容管理系统</h1>
-    <el-tabs type="border-card" class="demo-tabs" stretch>
-      <el-tab-pane>
+    <el-tabs type="border-card" class="demo-tabs" v-model="currentTab" stretch>
+      <el-tab-pane name="account">
         <template #label>
           <span class="custom-tabs-label">
             <el-icon><Avatar /></el-icon>
@@ -11,14 +11,14 @@
         </template>
         <login-account ref="loginAccountRef"></login-account>
       </el-tab-pane>
-      <el-tab-pane>
+      <el-tab-pane name="phone">
         <template #label>
           <span class="custom-tabs-label">
             <el-icon><Iphone /></el-icon>
             <span>手机登录</span>
           </span>
         </template>
-        <login-phone></login-phone>
+        <login-phone ref="loginPhoneRef"></login-phone>
       </el-tab-pane>
     </el-tabs>
 
@@ -43,21 +43,29 @@ export default defineComponent({
   setup() {
     // 定义一个响应式变量isKeepPassword用于保存是否记住密码，默认true（勾选记住密码）
     const isKeepPassword = ref(true)
+    const currentTab = ref('account')
 
     // 定义一个Ref对象loginAccountRef用于拿到LoginAccount这个组件对象，并通过<InstanceType<typeof LoginAccount>>这一泛型指定这个Ref对象类型为LoginAccount
     const loginAccountRef = ref<InstanceType<typeof LoginAccount>>()
 
+    const loginPhoneRef = ref<InstanceType<typeof LoginPhone>>()
+
     // 当立即登录按钮被点击时触发HandleLoginAction这一点击事件，执行其内部函数
     const HandleLoginAction = () => {
-      // console.log(loginAccountRef.value)
-      // 通过loginAccountRef拿到LoginAccount这个组件对象，并调用LoginAccount这个组件对象中的LoginAccountAction这个方法（想要获取ref对象内部的值或者方法必须调用.value,并且此处需要使用可选类型，以避免因为没有LoginAccount这个对象时而报错）
-      loginAccountRef.value?.LoginAccountAction()
+      if (currentTab.value === 'account') {
+        // console.log(loginAccountRef.value)
+        // 通过loginAccountRef拿到LoginAccount这个组件对象，并调用LoginAccount这个组件对象中的LoginAccountAction这个方法（想要获取ref对象内部的值或者方法必须调用.value,并且此处需要使用可选类型，以避免因为没有LoginAccount这个对象时而报错）
+        loginAccountRef.value?.LoginAccountAction(isKeepPassword.value)
+      } else {
+        loginPhoneRef.value?.loginPhoneAction()
+      }
     }
 
     return {
       isKeepPassword,
       loginAccountRef,
-      HandleLoginAction
+      HandleLoginAction,
+      currentTab
     }
   }
 })
