@@ -1,5 +1,6 @@
 import LRRequest from './request'
 import { BASE_URL, TIME_OUT } from './request/config'
+import LocalCache from '@/utils/cache'
 
 const lrRequest = new LRRequest({
   baseURL: BASE_URL,
@@ -9,23 +10,23 @@ const lrRequest = new LRRequest({
   interceptors: {
     requestInterceptor: (config) => {
       // 添加token到config中
-      // const token = ''
-      // if (token && config.headers) {
-      //   config.headers.Authorization = `Bearer ${token}`
-      // }
-      console.log('每个axios实例自己独有的拦截器：请求成功的拦截')
+      const token = LocalCache.getCache('token')
+      if (token && config.headers) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+      // console.log('每个axios实例自己独有的拦截器：请求成功的拦截')
       return config
     },
     requestInterceptorCatch: (err) => {
-      console.log('每个axios实例自己独有的拦截器：请求失败的拦截')
+      // console.log('每个axios实例自己独有的拦截器：请求失败的拦截')
       return err
     },
     responseInterceptor: (res) => {
-      console.log('每个axios实例自己独有的拦截器：响应成功的拦截')
+      // console.log('每个axios实例自己独有的拦截器：响应成功的拦截')
       return res
     },
     responseInterceptorCatch: (err) => {
-      console.log('每个axios实例自己独有的拦截器：响应失败的拦截')
+      // console.log('每个axios实例自己独有的拦截器：响应失败的拦截')
       return err
     }
   }
