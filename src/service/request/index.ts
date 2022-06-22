@@ -48,7 +48,7 @@ class LRRequest {
     // 所有实例中共有的拦截器：请求拦截
     this.instance.interceptors.request.use(
       (config) => {
-        console.log('所有的实例共有的拦截器：请求拦截成功')
+        // console.log('所有的实例共有的拦截器：请求拦截成功')
 
         // 判断showload是否有值，如果有值则打开loading动画
         if (this.showLoading) {
@@ -62,7 +62,7 @@ class LRRequest {
         return config
       },
       (err) => {
-        console.log('所有的实例共有的拦截器：请求拦截失败')
+        // console.log('所有的实例共有的拦截器：请求拦截失败')
         return err
       }
     )
@@ -70,7 +70,7 @@ class LRRequest {
     // 所有实例中共有的拦截器：响应拦截
     this.instance.interceptors.response.use(
       (res) => {
-        console.log('所有的实例共有的拦截器：响应拦截成功')
+        // console.log('所有的实例共有的拦截器：响应拦截成功')
 
         // 响应成功的时候需要关闭loading动画
         this.elloading?.close()
@@ -92,7 +92,7 @@ class LRRequest {
         return res.data
       },
       (err) => {
-        console.log('所有的实例共有的拦截器：响应拦截失败')
+        // console.log('所有的实例共有的拦截器：响应拦截失败')
 
         // 响应失败的时候也需要关闭loading动画，否则就一直出现loading
         this.elloading?.close()
