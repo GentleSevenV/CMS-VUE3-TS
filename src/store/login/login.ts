@@ -5,6 +5,7 @@ import { ILoginState } from './type'
 import { IAccount } from '@/service/login/type'
 import { accountLoginRequest, getUserInfoById, getUserMenusByRoleId } from '@/service/login/login'
 import LocalCache from '@/utils/cache'
+import { mapMenutoRoutes } from '@/utils/mapmenu'
 const login: Module<ILoginState, IRootState> = {
   namespaced: true,
   state: () => {
@@ -24,8 +25,15 @@ const login: Module<ILoginState, IRootState> = {
     changeUserInfo: (state, userInfo: any) => {
       state.userInfo = userInfo
     },
+    // 定义一个changeUserMenus方法用于修改（保存）发生请求之后获取的userMenus
     changeUserMenus: (state, userMenus: any) => {
       state.userMenus = userMenus
+      // 将登录之后通过roleId拿到的用户菜单userMenus通过mapMenutoRoutes函数映射到路由中去
+      const routes = mapMenutoRoutes(userMenus)
+      routes.forEach((route) => {
+        router.addRoute('main', route)
+      })
+      console.log(routes)
     }
   },
   actions: {
@@ -85,10 +93,10 @@ const login: Module<ILoginState, IRootState> = {
       if (userMenus) {
         commit('changeUserMenus', userMenus)
       }
-    },
-    phoneLoginAction({ commit }, payload: any) {
-      console.log('执行phoneLoginAction', payload)
     }
+    // phoneLoginAction({ commit }, payload: any) {
+    //   console.log('执行phoneLoginAction', payload)
+    // }
   }
 }
 
